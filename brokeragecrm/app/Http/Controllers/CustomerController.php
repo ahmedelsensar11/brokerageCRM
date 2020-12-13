@@ -36,35 +36,31 @@ class CustomerController extends Controller
     //store after validation
     protected function store(Request $request)
     {
-        try {
+    
+        
+        DB::transaction(function () use($request) {
+
+            //check customer data validation
+            $request->validate([
+                'first_name' => 'required|string|min:2|max:255',
+                'last_name'  => 'required|string|min:2|max:255',
+                'email' => 'required|string|email|max:255|unique:customers',
+                'city' => 'required|string','max:255|min:2',
+                'country' => 'required|string','max:255|min:2',
+                'address1' => 'required|string','max:255|min:4',
+                'address2' => 'string|max:255',
+                'phone' => 'required|string|min:6|max:255|unique:customers',
+                'postal_code' => 'required|string','min:2|max:255',
+            ]);
             
-            DB::transaction(function () use($request) {
+            //store new customer after validation
+            $this->newCustomer($request);  
 
-                //check customer data validation
-                $request->validate([
-                    'first_name' => 'required|string|min:2|max:255',
-                    'last_name'  => 'required|string|min:2|max:255',
-                    'email' => 'required|string|email|max:255|unique:customers',
-                    'city' => 'required|string','max:255|min:2',
-                    'country' => 'required|string','max:255|min:2',
-                    'address1' => 'required|string','max:255|min:4',
-                    'address2' => 'string|max:255',
-                    'phone' => 'required|string|min:6|max:255|unique:customers',
-                    'postal_code' => 'required|string','min:2|max:255',
-                ]);
-                
-                //store new customer after validation
-                $this->newCustomer($request);  
+        });
+        
+        //redirect to home
+        return \redirect('/home');
 
-            });
-            
-            //redirect to home
-            return \redirect('/home');
-
-        } catch (\Exception $ex) {
-            //return dd($ex->getMessage());
-            return \view('errors.500');
-        }
 
     }
    

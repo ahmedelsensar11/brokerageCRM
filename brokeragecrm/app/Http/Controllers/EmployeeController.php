@@ -56,33 +56,27 @@ class EmployeeController extends Controller
     //store new employee
     protected function store(Request $request)
     {
-        try {
 
-            DB::transaction(function () use($request) {
+        DB::transaction(function () use($request) {
 
-                //check customer form validation
-                $request->validate([
-                    'firstname' => ['required', 'string','min:2' ,'max:255'],
-                    'lastname' => ['required', 'string','min:2', 'max:255'],
-                    'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                    'password' => ['required', 'string', 'min:6', 'confirmed'],
-                    'position' => ['required', 'string','min:2', 'max:255'],
-                    'address' => ['required', 'string','min:2', 'max:255'],
-                ]);
-                
-                //store new customer after validation
-                $this->newEmployee($request);  
-    
-            });
-    
-            //redirect to home
-            return \redirect('/home');
+            //check customer form validation
+            $request->validate([
+                'firstname' => ['required', 'string','min:2' ,'max:255'],
+                'lastname' => ['required', 'string','min:2', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:6', 'confirmed'],
+                'position' => ['required', 'string','min:2', 'max:255'],
+                'address' => ['required', 'string','min:2', 'max:255'],
+            ]);
             
-        } 
-        catch (\Exception $ex) {
-            //return dd($ex->getMessage());
-            return \view('errors.500');
-        }
+            //store new customer after validation
+            $this->newEmployee($request);  
+
+        });
+
+        //redirect to home
+        return \redirect('/home');
+    
 
     }
 
